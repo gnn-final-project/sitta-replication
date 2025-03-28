@@ -5,12 +5,41 @@ from torchvision import datasets, transforms, models
 from torch.utils.data import DataLoader
 import pandas as pd
 import argparse
+import os
+from PIL import Image
 
 # Argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument("--mode", type=str, default="noaug", choices=["noaug", "classic"], help="Augmentation mode")
 args = parser.parse_args()
 mode = args.mode
+
+# Classic augmentation preprocessing (only run once)
+def run_classic_augmentation_on_single_sick(augment_count=10):
+    print("🧪 Performing classic augmentation on 1 sick image...")
+    input_folder = "./data/plant_pathology/train/sick"
+    input_images = [f for f in os.listdir(input_folder) if f.lower().endswith(".jpg")]
+    if len(input_images) == 0:
+        raise ValueError("No image found in train/sick")
+    elif len(input_images) > 1:
+        print(f"⚠️ Warning: {len(input_images)} images found. Using the first one only.")
+
+    img_path = os.path.join(input_folder, sorted(input_images)[0])
+    img = Image.open(img_path).convert("RGB")
+
+    augmentation = transforms.Compose([
+        transforms.Resize((288, 288)),
+        transforms.RandomHorizontalFlip(p=1.0),
+        transforms.RandomRotation(25),
+        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.05)
+    ])
+
+    existing_aug = len([f for f in input_images if f.startswith("aug_sick_")])
+    for i in range(augment_count):
+        aug_img = augmentation(img)
+        save_path = os.path.join(input_folder, f"aug_sick_{existing_aug + i + 1}.jpg")
+        aug_img.save(save_path)
+    print(f"✅ {augment_count} augmented images saved to {input_folder}")
 
 # Define transforms
 if mode == "noaug":
@@ -21,6 +50,7 @@ if mode == "noaug":
     ])
 elif mode == "classic":
     print("🔍 Using CLASSIC augmentation")
+    run_classic_augmentation_on_single_sick()  # <-- only when mode is classic
     train_transform = transforms.Compose([
         transforms.Resize((288, 288)),
         transforms.RandomHorizontalFlip(),
