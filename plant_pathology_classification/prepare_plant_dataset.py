@@ -42,3 +42,10 @@ for fname in test_sick_imgs:
     shutil.copy(os.path.join(base_sick, fname), os.path.join(test_sick, fname))
 
 print("✅ Copied 81 sick images to test/sick")
+
+# Step 3: Add 1 real sick image to train/sick
+remaining_sick = list(set(all_sick) - set(test_sick_imgs))
+train_sick_sample = random.choice(remaining_sick)
+
+shutil.copy(os.path.join(base_sick, train_sick_sample), os.path.join(train_sick, train_sick_sample))
+print(f"✅ Copied 1 real sick image to train/sick: {train_sick_sample}")
