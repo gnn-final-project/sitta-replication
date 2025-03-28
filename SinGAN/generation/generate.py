@@ -1,71 +1,53 @@
 import os
-import shutil
-import random
 import subprocess
+import shutil
+import time
 
-# Set seed for reproducibility
-random.seed(42)
+# Domains to generate
+domains = ["apple2orange", "horse2zebra", "milk2bubblemilk", "vanilla2chocolate"]
 
-# === Step 1: Prepare dataset folders ===
-base_healthy = "../../data/plant_pathology/healthy"
-base_sick = "../../data/plant_pathology/sick"
+# Configuration
+data_dir = "./data"
+results_dir = "./results"
 
-train_healthy = "./data/plant_pathology/train/healthy"
-train_sick = "./data/plant_pathology/train/sick"
-test_healthy = "./data/plant_pathology/test/healthy"
-test_sick = "./data/plant_pathology/test/sick"
+generation_times = []
 
-for folder in [train_healthy, train_sick, test_healthy, test_sick]:
-    os.makedirs(folder, exist_ok=True)
+for domain in domains:
+    print(f"\n📌 Generating translated image for domain: {domain}")
 
-# === Step 2: Random split healthy images ===
-all_healthy = sorted(os.listdir(base_healthy))
-random.shuffle(all_healthy)
-train_healthy_imgs = all_healthy[:416]
-test_healthy_imgs = all_healthy[416:]
+    a_image = os.path.join(data_dir, f"{domain}_A.jpg")
+    model_folder = os.path.join(results_dir, domain)
+    model_g = os.path.join(model_folder, "g_multivanilla.pt")
+    model_amps = os.path.join(model_folder, "amps.pt")
 
-for fname in train_healthy_imgs:
-    shutil.copy(os.path.join(base_healthy, fname), os.path.join(train_healthy, fname))
+    # Start timing
+    start_time = time.time()
 
-for fname in test_healthy_imgs:
-    shutil.copy(os.path.join(base_healthy, fname), os.path.join(test_healthy, fname))
-
-print("✅ Copied 416 healthy images to train and 100 to test.")
-
-# === Step 3: Random select 81 sick test images ===
-all_sick = sorted(os.listdir(base_sick))
-test_sick_imgs = random.sample(all_sick, 81)
-
-for fname in test_sick_imgs:
-    shutil.copy(os.path.join(base_sick, fname), os.path.join(test_sick, fname))
-
-print("✅ Copied 81 sick images to test set.")
-
-# === Step 4: Generate fake sick images using SinGAN ===
-model_dir = "./results/healthy2sick"
-generated_output = train_sick
-os.makedirs(generated_output, exist_ok=True)
-
-for i, fname in enumerate(sorted(os.listdir(train_healthy))):
-    input_path = os.path.join(train_healthy, fname)
-    output_name = f"sick_gen_{i+1:03d}.jpg"
-    output_path = os.path.join(generated_output, output_name)
-
-    print(f"📌 Generating fake sick image: {output_name}")
-
+    # Run SinGAN in evaluation mode
     subprocess.run([
         "python", "main.py",
-        "--root", input_path,
+        "--root", a_image,
         "--evaluation",
-        "--model-to-load", os.path.join(model_dir, "g_multivanilla.pt"),
-        "--amps-to-load", os.path.join(model_dir, "amps.pt"),
-        "--save", "temp_gen",
-        "--results-dir", "./results",
+        "--model-to-load", model_g,
+        "--amps-to-load", model_amps,
+        "--save", domain,
+        "--results-dir", results_dir,
         "--num-steps", "10"
     ])
 
-    gen_img = "./results/temp_gen/s11/s9_sampled.png"
-    if os.path.exists(gen_img):
-        shutil.copy(gen_img, output_path)
+    end_time = time.time()
+    duration = end_time - start_time
+    generation_times.append(duration)
 
-print("✅ Finished generating 416 fake sick images using SinGAN.")
+    gen_img = os.path.join(results_dir, domain, "s11", "s9_sampled.png")
+    if os.path.exists(gen_img):
+        print(f"✅ Saved: {gen_img} | ⏱️ Time: {duration:.2f}s")
+    else:
+        print(f"❌ Generation failed for {domain}")
+
+# Average time
+avg_time = sum(generation_times) / len(generation_times)
+print("\n📊 Generation Summary")
+for d, t in zip(domains, generation_times):
+    print(f"{d:<20} : {t:.2f} seconds")
+print(f"\n⏱️ Average generation time: {avg_time:.2f} seconds")
