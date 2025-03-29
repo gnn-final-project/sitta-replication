@@ -1,3 +1,4 @@
 # Ignore data folder
 **/data/
 **/tmp/
+**/__pycache__/
