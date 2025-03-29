@@ -77,7 +77,7 @@ domains = ["apple2orange", "horse2zebra", "milk2bubblemilk", "vanilla2chocolate"
 results = []
 for domain in domains:
     print(f"\nEvaluating domain: {domain}")
-    real_img = f"../../data/processed/singan/{domain}_B.jpg"
+    real_img = f"./data/{domain}_B.jpg"
     gen_img = f"./results/{domain}/s11/s9_sampled.png"
 
     fid = calculate_fid(real_img, gen_img)
