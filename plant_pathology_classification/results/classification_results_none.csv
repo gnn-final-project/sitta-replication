@@ -1,3 +1,0 @@
-Model,Mode,Accuracy (%)
-ResNet18,noaug,55.25
-VGG16,noaug,55.25
