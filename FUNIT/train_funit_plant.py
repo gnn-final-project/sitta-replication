@@ -26,7 +26,7 @@ gen = FewShotGen(hparams).to(device)
 optimizer = optim.Adam(gen.parameters(), lr=1e-4)
 loss_fn = nn.L1Loss()
 
-for step in tqdm(range(1000), desc="🧪 Training FUNIT"):
+for step in tqdm(range(20000), desc="🧪 Training FUNIT"):
     optimizer.zero_grad()
     output = gen(content, style)
     loss = loss_fn(output, content)

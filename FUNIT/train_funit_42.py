@@ -13,6 +13,7 @@ import pandas as pd
 DATA_FOLDER = "./data"
 SAVE_FOLDER = "./results"
 os.makedirs(SAVE_FOLDER, exist_ok=True)
+os.makedirs("./models", exist_ok=True)
 
 DOMAINS = [
     "apple2orange",
@@ -59,7 +60,7 @@ for domain in DOMAINS:
     optimizer = optim.Adam(gen.parameters(), lr=1e-4)
     loss_fn = nn.L1Loss()
 
-    steps = 1000
+    steps = 20000
     start_time = time.time()
 
     for step in tqdm(range(steps), desc=f"🔧 Training {domain}"):
@@ -73,12 +74,22 @@ for domain in DOMAINS:
     elapsed = time.time() - start_time
     train_times.append({"domain": domain, "total_seconds": elapsed, "per_iter": elapsed / steps})
 
-    save_path = os.path.join(SAVE_FOLDER, f"{domain}_gen.pth")
+    save_path = f"./models/{domain}_gen.pth"
     torch.save(gen.state_dict(), save_path)
     print(f"✅ Saved trained generator: {save_path}")
     print(f"⏱ Training time: {elapsed:.2f} sec")
 
 # Save training times
 df = pd.DataFrame(train_times)
+
+avg_total = df["total_seconds"].mean()
+avg_per_iter = df["per_iter"].mean()
+
+df.loc[len(df)] = {
+    "domain": "AVERAGE",
+    "total_seconds": avg_total,
+    "per_iter": avg_per_iter
+}
+
 df.to_csv(os.path.join(SAVE_FOLDER, "funit_time_results.csv"), index=False)
 print("\n📊 Saved training time results to funit_time_results.csv")
