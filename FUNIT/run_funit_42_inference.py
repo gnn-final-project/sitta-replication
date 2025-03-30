@@ -54,7 +54,9 @@ for domain in tqdm(DOMAINS, desc="🖼 Translating with FUNIT"):
 
     # Load trained generator
     gen = FewShotGen(hparams).to(device)
-    gen.load_state_dict(torch.load(os.path.join(SAVE_FOLDER, f"{domain}_gen.pth")))
+    model_path = os.path.join("./models", f"{domain}_gen.pth")
+    gen.load_state_dict(torch.load(model_path))
+    print(f"📦 Loaded generator: {model_path}")
     gen.eval()
 
     # Translate
