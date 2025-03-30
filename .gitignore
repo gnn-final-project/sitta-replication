@@ -1,6 +1,5 @@
 # Ignore data folder
-**/data/
 **/tmp/
 **/__pycache__/
-**/results/
 **/.DS_Store
+**/plant_pathology/
