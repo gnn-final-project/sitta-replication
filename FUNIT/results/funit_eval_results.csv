@@ -1,0 +1,6 @@
+Domain,FID ↓,LPIPS ↓,VGG Loss ↓
+apple2orange,291.13,0.7592,36.0032
+horse2zebra,244.55,0.7227,48.5102
+milk2bubblemilk,239.7,0.6171,9.628
+vanilla2chocolate,269.19,0.4282,14.0232
+Average,261.14,0.6318,27.0412

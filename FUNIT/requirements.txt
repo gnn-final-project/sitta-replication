@@ -10,4 +10,4 @@ pyyaml
 tensorboardX
 tqdm
 pandas
-datasets
+lpips
