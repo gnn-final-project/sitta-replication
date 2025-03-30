@@ -64,7 +64,7 @@ for i, fname in enumerate(sorted(os.listdir(train_healthy))):
         "--num-steps", "10"
     ])
 
-    gen_img = "./results/temp_gen/s11/s9_sampled.png"
+    gen_img = "./results/tmp/s11/s9_sampled.png"
     if os.path.exists(gen_img):
         shutil.copy(gen_img, output_path)
 

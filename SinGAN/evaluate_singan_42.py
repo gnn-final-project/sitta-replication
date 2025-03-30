@@ -107,6 +107,6 @@ print("\nEvaluation Results (SITTA Table 1 format)")
 print(df.to_string(index=False))
 
 # Save to CSV
-csv_path = "singan_eval_results.csv"
+csv_path = "./results/singan_eval_results.csv"
 df.to_csv(csv_path, index=False)
 print(f"\nEvaluation results saved to: {csv_path}")
