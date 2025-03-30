@@ -11,7 +11,7 @@ from tqdm import tqdm
 source_healthy = "../data/plant_pathology/healthy"
 source_sick = "../data/plant_pathology/sick"
 target_root = "./data/plant_pathology"
-model_path = "./results/healthy2sick_gen.pth"
+model_path = "./models/healthy2sick_gen.pth"
 os.makedirs(target_root, exist_ok=True)
 
 # Subfolders
@@ -63,11 +63,13 @@ transform = transforms.Compose([
 ])
 
 train_imgs = sorted(os.listdir(train_h))
-for fname in tqdm(train_imgs, desc="🧬 Generating FUNIT sick images"):
+for idx, fname in enumerate(tqdm(train_imgs, desc="🧬 Generating FUNIT sick images")):
     img = transform(Image.open(os.path.join(train_h, fname)).convert("RGB")).unsqueeze(0).to(device)
     with torch.no_grad():
         output = gen(img, style)
     out_img = transforms.ToPILImage()(output.squeeze().cpu())
-    out_img.save(os.path.join(train_s, fname))
+
+    save_name = f"sick_gen_{idx+1:03d}.jpg"
+    out_img.save(os.path.join(train_s, save_name))
 
 print("✅ FUNIT-based data augmentation complete!")
