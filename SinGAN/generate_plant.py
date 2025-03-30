@@ -7,8 +7,8 @@ import subprocess
 random.seed(42)
 
 # === Step 1: Prepare dataset folders ===
-base_healthy = "../../data/plant_pathology/healthy"
-base_sick = "../../data/plant_pathology/sick"
+base_healthy = "../data/plant_pathology/healthy"
+base_sick = "../data/plant_pathology/sick"
 
 train_healthy = "./data/plant_pathology/train/healthy"
 train_sick = "./data/plant_pathology/train/sick"
