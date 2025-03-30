@@ -11,7 +11,7 @@ from tqdm import tqdm
 source_healthy = "../data/plant_pathology/healthy"
 source_sick = "../data/plant_pathology/sick"
 target_root = "./data/plant_pathology"
-model_path = "./results_funit/healthy2sick_gen.pth"
+model_path = "./results/healthy2sick_gen.pth"
 os.makedirs(target_root, exist_ok=True)
 
 # Subfolders
